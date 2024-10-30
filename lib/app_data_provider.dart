@@ -1,7 +1,19 @@
 import 'package:bp_records/models/bp_record.dart';
 import 'package:flutter/foundation.dart';
+import 'package:bp_records/domain/repository.dart';
 
+enum ProviderState {
+  stateInitial,
+  stateInitialDataLoaded,
+  stateBeginEdit,
+}
+
+//------------------------------------
 class AppDataProvider with ChangeNotifier {
+  ProviderState _currentState = ProviderState.stateInitial;
+  ProviderState get state => _currentState;
+
+  // ------------
   List<BpRecord> records = [
     BpRecord(
         id: 1,
@@ -29,6 +41,33 @@ class AppDataProvider with ChangeNotifier {
         pulse: 97),
   ];
 
+  BpRecord currentRecord = BpRecord(
+      id: -1,
+      dateTaken: DateTime.now(),
+      systolic: 100,
+      diastolic: 60,
+      pulse: 70);
+
+  // ------------------------------
+  Future<void> initSelf() async {
+    await Repository().initInstance("bp_records.db");
+    records = await Repository().getAllRecords();
+    _currentState = ProviderState.stateInitialDataLoaded;
+    notifyListeners();
+  }
+
+  void addRecord() {
+    currentRecord = BpRecord(
+        id: -1,
+        dateTaken: DateTime.now(),
+        systolic: 100,
+        diastolic: 60,
+        pulse: 70);
+    _currentState = ProviderState.stateBeginEdit;
+    notifyListeners();
+  }
+
+  // ------------------------------
   String? validateSystolic(String? reading) {
     int? val = int.tryParse(reading ?? "");
     if (val == null || val <= 0 || val >= 200) {
@@ -38,6 +77,7 @@ class AppDataProvider with ChangeNotifier {
     }
   }
 
+  // ------------------------------
   String? validateDiastolic(String? reading) {
     int? val = int.tryParse(reading ?? "");
     if (val == null || val <= 0 || val >= 200) {
@@ -47,6 +87,7 @@ class AppDataProvider with ChangeNotifier {
     }
   }
 
+  // ------------------------------
   String? validatePulse(String? reading) {
     int? val = int.tryParse(reading ?? "");
     if (val == null || val <= 0 || val >= 200) {

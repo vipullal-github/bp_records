@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../models/bp_record.dart';
+
 class AddRecordPage extends StatefulWidget {
   const AddRecordPage({super.key});
 
@@ -128,7 +130,9 @@ class _AddRecordPageState extends State<AddRecordPage> {
                       const SizedBox(width: 20),
                       ElevatedButton(
                         onPressed: () {
-                          if (_formKey.currentState!.validate()) {}
+                          if (_formKey.currentState!.validate()) {
+                            provider.addRecord();
+                          }
                         },
                         child: const Text('Save'),
                       ),

@@ -55,6 +55,17 @@ class Repository {
     );
   }
 
+  // ------------------------------
+  Future<List<BpRecord>> getAllRecords() async {
+    List<BpRecord> records = [];
+    var dataRows = await mDB.query(_bpRecTbl, orderBy: "dateTaken");
+    for (Map<String, dynamic> r in dataRows) {
+      BpRecord rec = BpRecord.fromJson(r);
+      records.add(rec);
+    }
+    return records;
+  }
+
   // -------------------------------
   Future<BpRecord> insertRecord(BpRecord record) async {
     Map<String, dynamic> rowData = _record2Row(record);
