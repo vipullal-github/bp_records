@@ -25,28 +25,30 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  
+  Widget _itemsListView(BuildContext context, AppDataProvider provider) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        // Text("Hello, world")
+        Expanded(
+          child: ListView.builder(
+            itemCount: provider.records.length,
+            itemBuilder: (context, index) {
+              BpRecord arec = provider.records[index];
+              return BpWidget(
+                rec: arec,
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
 
   Widget _doBuild(BuildContext context, AppDataProvider provider) {
     return Scaffold(
       appBar: AppBar(title: const Text("BP records")),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // Text("Hello, world")
-          Expanded(
-            child: ListView.builder(
-              itemCount: provider.records.length,
-              itemBuilder: (context, index) {
-                BpRecord arec = provider.records[index];
-                return BpWidget(
-                  rec: arec,
-                );
-              },
-            ),
-          ),
-        ],
-      ),
+      body: _itemsListView(context, provider),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           onAddButtonPressed(context);
@@ -66,6 +68,7 @@ class HomePage extends StatelessWidget {
             provider.initSelf();
             return _loadingInitialData(context);
           case ProviderState.stateInitialDataLoaded:
+          case ProviderState.stateEditSaved:
             break;
           case ProviderState.stateBeginEdit:
             SchedulerBinding.instance.addPostFrameCallback(

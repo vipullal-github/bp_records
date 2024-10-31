@@ -6,6 +6,7 @@ enum ProviderState {
   stateInitial,
   stateInitialDataLoaded,
   stateBeginEdit,
+  stateEditSaved
 }
 
 //------------------------------------
@@ -56,6 +57,7 @@ class AppDataProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  // ------------------------------
   void addRecord() {
     currentRecord = BpRecord(
         id: -1,
@@ -95,5 +97,22 @@ class AppDataProvider with ChangeNotifier {
     } else {
       return null;
     }
+  }
+
+  // --------------------------------------
+  Future<void> saveCurrentRecord(
+      String sys, String dia, String pulse, String temp) async {
+    currentRecord.systolic = int.parse(sys);
+    currentRecord.diastolic = int.parse(dia);
+    currentRecord.pulse = int.parse(pulse);
+    currentRecord.temperature = double.tryParse(temp);
+    if (currentRecord.id >= 1) {
+      await Repository().saveRecord(currentRecord);
+    } else {
+      await Repository().insertRecord(currentRecord);
+      records.add(currentRecord);
+    }
+    _currentState = ProviderState.stateEditSaved;
+    notifyListeners();
   }
 }

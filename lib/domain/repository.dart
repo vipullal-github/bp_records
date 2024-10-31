@@ -83,4 +83,12 @@ class Repository {
     }
     return null;
   }
+
+  // -------------------------------
+  Future<int> saveRecord(BpRecord currentRecord) async {
+    Map<String, dynamic> rowData = _record2Row(currentRecord);
+    int n = await mDB.update(_bpRecTbl, rowData,
+        where: "id = ?", whereArgs: [currentRecord.id]);
+    return n;
+  }
 }

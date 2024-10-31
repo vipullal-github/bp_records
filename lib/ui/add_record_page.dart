@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bp_records/app_data_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -51,7 +53,20 @@ class _AddRecordPageState extends State<AddRecordPage> {
     });
   }
 
+  void saveValues(AppDataProvider provider) {
+    provider.saveCurrentRecord(
+        _systolicController.text,
+        _diastolicController.text,
+        _pulseController.text,
+        _temperatureController.text);
+  }
+
   Widget _body(BuildContext context, AppDataProvider provider) {
+    if (provider.state == ProviderState.stateEditSaved) {
+      scheduleMicrotask(
+        () => Navigator.of(context).pop(),
+      );
+    }
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -131,7 +146,7 @@ class _AddRecordPageState extends State<AddRecordPage> {
                       ElevatedButton(
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
-                            provider.addRecord();
+                            saveValues(provider);
                           }
                         },
                         child: const Text('Save'),
